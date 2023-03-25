@@ -56,4 +56,4 @@ def fonction_1(graphe,c,b_0,gamma):
             else:
                 continue
     return graphe
-print(fonction_1(graphe,10,10,1))# un petit test
+print(fonction_1(graphe,10,10,1))# un petit teste

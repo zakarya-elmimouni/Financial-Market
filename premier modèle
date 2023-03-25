@@ -7,7 +7,7 @@ import random
 #les sommmets sont les agents,et ils sont liés aux autres agents à travers les aretes 
 #graphe a la structure suivante {agent:[[liste des agents auquelsl'agent a emprunté],[liste des angents qui ont preté à notre agent]]}
 def fonction(graphe,c,b_0):
-    modification=1
+    modification=1#si la boucle tourne et il n'y a pas de modification alors on est arrivé à l'équilibre et on doit récupérer la version finale de notre réseau(graphe)
     while modification!=0:
         modification=0
         for element in graphe.keys():
@@ -25,9 +25,8 @@ graphe={1:[[2,3],[4]],2:[[3],[1]],3:[[4],[2,1]],4:[[1],[3]]}
 #print(fonction(graphe,5,10))
 #après ça je dois penser à comment je vais insérer la variable gamma qui modélise le taux de création d'un lien
 #avec gamma on peut avoir un réseau dynamique 
-lam=4
-a=np.random.poisson(5)
-#print(a)
+#lam=4
+#a=np.random.poisson(5)
 #At rate gamma, each agent i takes out a loan from agent j, selected at random from the pool of other investors.
 #This implies (ℓi, bi) → (ℓi + 1, bi) and (ℓj , bj) → (ℓj , bj + 1).
 #essayons de développer la fonction implémentée précédemment
@@ -39,8 +38,6 @@ def fonction_1(graphe,c,b_0,gamma):
         voisin_element=set(voisin_element)
         voisin_element=list(voisin_element)
         voisins[element]=voisin_element
-
-
     modification=1
     while modification!=0:
         modification=0
@@ -60,4 +57,4 @@ def fonction_1(graphe,c,b_0,gamma):
             else:
                 continue
     return graphe
-print(fonction_1(graphe,10,10,1))
+print(fonction_1(graphe,10,10,1))# un petit teste

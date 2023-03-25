@@ -3,7 +3,8 @@ import random
 #on commence par une petite representation du pràblème
 #c'est une representation simple qui necessite pas mal de developpement surtout qu'il manque des points que j'ai pas comprise
 
-#graphe contient tous les agents et modélise notre réseau 
+#graphe contient tous les agents et modélise notre réseau sous forme d'un graphe 
+#les sommmets sont les agents,et ils sont liés aux autres agents à travers les aretes 
 #graphe a la structure suivante {agent:[[liste des agents auquelsl'agent a emprunté],[liste des angents qui ont preté à notre agent]]}
 def fonction(graphe,c,b_0):
     modification=1

@@ -16,6 +16,7 @@ def arete(graphe):
             if (voisin,element) not in aretes:
                 aretes.append((voisin,element))
     return  aretes
+#cette fonction est un modèle statique de notre problème 
 def fonction(graphe,c,b_0):
     """cette fonction rertourne le réseau (graphe) à l'état stationnaire + la densité à l'état stationnaire"""
     modification=1#si la boucle tourne et il n'y a pas de modification alors on est arrivé à l'équilibre et on doit récupérer la version finale de notre réseau(graphe)
@@ -32,7 +33,13 @@ def fonction(graphe,c,b_0):
             else:
                 continue
     return graphe
-graphe={1:[[2,3,7],[4,5,6]],2:[[3,5,8],[1,6,7]],3:[[4,5],[2,1,5,7]],4:[[1,7,8],[3,5,6]],5:[[1,3,4,6,7],[2,3,8]],6:[[2,4,1],[5,8]],7:[[3,2,8],[4,1,5]],8:[[6,5],[4,2,7]]}
+#voici notre graphe de réference 
+graphe={1:[[2,3,7],[4,5,6,8]],2:[[3,5,8],[1,6,7]],3:[[4,5],[2,1,5,7]],4:[[1,7,8],[3,5,6]],5:[[1,3,4,6,7],[2,3,8]],6:[[2,4,1],[5,8]],7:[[3,2,8],[4,1,5]],8:[[6,5,1],[4,2,7]]}
+#ce graphe necessite encore une améléoration au niveau du nombre des sommets et de relations
+#un problème qui se pose c'est quelle b_0 prendre pour ce graphe
+# on doit choisir une valeur de b_0 qui dépend de la taille du graphe mais qui ne va pas biaiser la condition
+#la conditoin est c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1
+
 def graph_convenable(graphe):
     for element in graphe.keys():
         for voisin in graphe[element][0]:
@@ -49,7 +56,7 @@ def graph_convenable(graphe):
 #a=np.random.poisson(5)
 #At rate gamma, each agent i takes out a loan from agent j, selected at random from the pool of other investors.
 #This implies (ℓi, bi) → (ℓi + 1, bi) and (ℓj , bj) → (ℓj , bj + 1).
-#essayons de développer la fonction implémentée précédemment
+#essayons de développer la fonction implémentée précédemment pour avoir un modèle dynamique
 def fonction_1(graphe,c,b_0,gamma,lamda):
     #je vais définir un dictionnaire des voisins
     nb_aretes_initial=len(arete(graphe))
@@ -92,7 +99,7 @@ def fonction_1(graphe,c,b_0,gamma,lamda):
     nb_aretes_final=len(arete(graphe))
     densité=nb_aretes_final/nb_aretes_initial
     return graphe,densité
-print(graph_convenable(graphe),fonction_1(graphe,0.9,6,0.5,0.5))# un petit teste
+print(graph_convenable(graphe),fonction_1(graphe,1,0,0.01,0.015))# un petit teste
 
 
 

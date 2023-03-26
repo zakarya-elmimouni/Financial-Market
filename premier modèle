@@ -49,10 +49,10 @@ def fonction_1(graphe,c,b_0,gamma,lamda):
                 graphe[element][1].append(voisins[element][b])
                 graphe[voisins[element][b]][0].append(element)
             c=np.random.poisson(lamda)
-            d=random.randint(0,len(voisins[element])-1)
+            d=random.randint(0,len(graphe[element][0])-1)
             if c>=lamda:
-                graphe[element][0].remove(voisins[element][b])#dégradation du lien 
-                graphe[voisins[element][b]][1].remove(element)
+                graphe[element][0].remove(graphe[element][0][d])#dégradation du lien 
+                graphe[voisins[element][d]][1].remove(element)
                 
             if c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1 and graphe[element]!=[[],[]]:
                 graphe[element]=[[],[]]
@@ -65,3 +65,15 @@ def fonction_1(graphe,c,b_0,gamma,lamda):
                 continue
     return graphe
 print(fonction_1(graphe,10,10,1))# un petit teste
+
+def aretes(graphe):
+    aretes=[]
+    for element in graphe.keys():
+        for voisin in graphe[element][0]:
+            if (element,voisin) not in aretes:
+                aretes.append((element,voisin))
+        for voisin in graphe[element][1]:
+            if (voisin,element) not in aretes:
+                aretes.append((voisin,element))
+    return  aretes
+

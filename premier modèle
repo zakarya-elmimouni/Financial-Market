@@ -32,7 +32,16 @@ def fonction(graphe,c,b_0):
             else:
                 continue
     return graphe
-graphe={1:[[2,3],[4]],2:[[3],[1]],3:[[4],[2,1]],4:[[1],[3]]}
+graphe={1:[[2,3,7],[4,5,6]],2:[[3,5,8],[1,6,7]],3:[[4,5],[2,1,5,7]],4:[[1,7,8],[3,5,6]],5:[[1,3,4,6,7],[2,3,8]],6:[[2,4,1],[5,8]],7:[[3,2,8],[4,1,5]],8:[[6,5],[4,2,7]]}
+def graph_convenable(graphe):
+    for element in graphe.keys():
+        for voisin in graphe[element][0]:
+            if element not in graphe[voisin][1]:
+                return False
+        for voisin in graphe[element][1]:
+            if element not in graphe[voisin][0]:
+                return False
+    return True
 #print(fonction(graphe,5,10))
 #après ça je dois penser à comment je vais insérer la variable gamma qui modélise le taux de création d'un lien
 #avec gamma on peut avoir un réseau dynamique 
@@ -83,7 +92,7 @@ def fonction_1(graphe,c,b_0,gamma,lamda):
     nb_aretes_final=len(arete(graphe))
     densité=nb_aretes_final/nb_aretes_initial
     return graphe,densité
-print(fonction_1(graphe,4,5,1,1))# un petit teste
+print(graph_convenable(graphe),fonction_1(graphe,0.9,6,0.5,0.5))# un petit teste
 
 
 

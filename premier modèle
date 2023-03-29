@@ -5,7 +5,7 @@ import random
 
 #graphe contient tous les agents et modélise notre réseau sous forme d'un graphe 
 #les sommmets sont les agents,et ils sont liés aux autres agents à travers les aretes 
-#graphe a la structure suivante {agent:[[liste des agents auquelsl'agent a emprunté],[liste des angents qui ont preté à notre agent]]}
+#graphe a la structure suivante {agent:[[liste des agents auquelsl'agent a emprunté],[liste des angents qui ont preté à notre agent],b_O]}
 #delta est le montant de pret par defaut pour tout le monde <1
 #je dois ajouter b_0 dans le graphe pour tout le monde
 def arete(graphe):
@@ -59,10 +59,14 @@ def graph_convenable(graphe):
 #At rate gamma, each agent i takes out a loan from agent j, selected at random from the pool of other investors.
 #This implies (ℓi, bi) → (ℓi + 1, bi) and (ℓj , bj) → (ℓj , bj + 1).
 #essayons de développer la fonction implémentée précédemment pour avoir un modèle dynamique
-def fonction_1(graphe,c,b_0,gamma,lamda,dt):
+def fonction_1(graphe,c,b_0,gamma,lamda,dt,delta):
     #je vais définir un dictionnaire des voisins
     nb_aretes_initial=len(arete(graphe))
     voisins={}
+    #ajout du b_0 au graphe de tous les agents
+    for element in graphe.keys():
+        graphe[element].append(b_0)
+    print(graphe)
     for element in graphe.keys():
         voisin_element=graphe[element][0]+graphe[element][1]
         voisin_element=set(voisin_element)
@@ -73,22 +77,26 @@ def fonction_1(graphe,c,b_0,gamma,lamda,dt):
         modification=0
         noeuds=list(graphe.keys())
         for element in noeuds:
-            a=np.random.poisson(gamma)
+            a=random.random()
             b=random.randint(0,len(noeuds)-1)#on recupère un indice aléatoire d'un voisin
             #attention tu dois recupérer un element aléatoire de tous les agents
             element_aléatoire=noeuds[b]
-            if element_aléatoire!=element and element_aléatoire not in graphe[element][1]:
-                if a>=gamma:
+            if element_aléatoire!=element and element_aléatoire not in graphe[element][1] and graphe[element_aléatoire][2]>=delta:
+                if a>=gamma*dt:
                     graphe[element][1].append(element_aléatoire)
+                    graphe[element][2]=graphe[element][2]+delta
                     graphe[element_aléatoire][0].append(element)
-            r=np.random.poisson(lamda)
+                    graphe[element_aléatoire][2]=graphe[element_aléatoire][2]-delta
+            r=random.random()
             if graphe[element][0]!=[]:
                 d=random.randint(0,len(graphe[element][0])-1)
                 element_aléatoire2=graphe[element][0][d]
-                if graphe[element_aléatoire2][1]!=[]:
-                    if r>=lamda:
-                        graphe[element][0].remove(element_aléatoire2)#dégradation du lien 
+                if graphe[element_aléatoire2][1]!=[] and graphe[element][2]>=delta:
+                    if r>=lamda*dt:
+                        graphe[element][0].remove(element_aléatoire2)#dégradation du lien
+                        graphe[element][2]=graphe[element][2]-delta
                         graphe[element_aléatoire2][1].remove(element)
+                        graphe[element_aléatoire2][2]=graphe[element_aléatoire2][2]+delta
             if c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1 and graphe[element]!=[[],[]]:
                 graphe[element]=[[],[]]
                 for voisin in graphe[element][0]:
@@ -101,7 +109,7 @@ def fonction_1(graphe,c,b_0,gamma,lamda,dt):
     nb_aretes_final=len(arete(graphe))
     densité=nb_aretes_final/nb_aretes_initial
     return graphe,densité
-print(graph_convenable(graphe),fonction_1(graphe,1,0,0.01,0.015))# un petit teste
+print(graph_convenable(graphe),fonction_1(graphe,1,1,0.01,0.015,0.1,0.3))# un petit teste
 
 
 

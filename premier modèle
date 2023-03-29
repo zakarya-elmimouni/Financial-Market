@@ -6,6 +6,8 @@ import random
 #graphe contient tous les agents et modélise notre réseau sous forme d'un graphe 
 #les sommmets sont les agents,et ils sont liés aux autres agents à travers les aretes 
 #graphe a la structure suivante {agent:[[liste des agents auquelsl'agent a emprunté],[liste des angents qui ont preté à notre agent]]}
+#delta est le montant de pret par defaut pour tout le monde <1
+#je dois ajouter b_0 dans le graphe pour tout le monde
 def arete(graphe):
     aretes=[]
     for element in graphe.keys():
@@ -57,7 +59,7 @@ def graph_convenable(graphe):
 #At rate gamma, each agent i takes out a loan from agent j, selected at random from the pool of other investors.
 #This implies (ℓi, bi) → (ℓi + 1, bi) and (ℓj , bj) → (ℓj , bj + 1).
 #essayons de développer la fonction implémentée précédemment pour avoir un modèle dynamique
-def fonction_1(graphe,c,b_0,gamma,lamda):
+def fonction_1(graphe,c,b_0,gamma,lamda,dt):
     #je vais définir un dictionnaire des voisins
     nb_aretes_initial=len(arete(graphe))
     voisins={}

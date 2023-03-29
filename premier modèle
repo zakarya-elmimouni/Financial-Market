@@ -14,9 +14,6 @@ def arete(graphe):
         for voisin in graphe[element][0]:
             if (element,voisin) not in aretes:
                 aretes.append((element,voisin))
-        for voisin in graphe[element][1]:
-            if (voisin,element) not in aretes:
-                aretes.append((voisin,element))
     return  aretes
 #cette fonction est un modèle statique de notre problème 
 def fonction(graphe,c,b_0):
@@ -81,6 +78,8 @@ def fonction_1(graphe,c,b_0,gamma,lamda,dt,delta):
             b=random.randint(0,len(noeuds)-1)#on recupère un indice aléatoire d'un voisin
             #attention tu dois recupérer un element aléatoire de tous les agents
             element_aléatoire=noeuds[b]
+            print(element_aléatoire)
+            print(graphe[element_aléatoire][2])
             if element_aléatoire!=element and element_aléatoire not in graphe[element][1] and graphe[element_aléatoire][2]>=delta:
                 if a>=gamma*dt:
                     graphe[element][1].append(element_aléatoire)
@@ -92,13 +91,13 @@ def fonction_1(graphe,c,b_0,gamma,lamda,dt,delta):
                 d=random.randint(0,len(graphe[element][0])-1)
                 element_aléatoire2=graphe[element][0][d]
                 if graphe[element_aléatoire2][1]!=[] and graphe[element][2]>=delta:
-                    if r>=lamda*dt:
+                    if r>=lamda*dt and element in graphe[element_aléatoire2][1]:
                         graphe[element][0].remove(element_aléatoire2)#dégradation du lien
                         graphe[element][2]=graphe[element][2]-delta
                         graphe[element_aléatoire2][1].remove(element)
                         graphe[element_aléatoire2][2]=graphe[element_aléatoire2][2]+delta
-            if c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1 and graphe[element]!=[[],[]]:
-                graphe[element]=[[],[]]
+            if c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1 and graphe[element]!=[[],[],graphe[element][2]]:
+                graphe[element]=[[],[],graphe[element][2]]
                 for voisin in graphe[element][0]:
                     graphe[voisin][1].remove(element)
                 for voisin in graphe[element][1]:
@@ -109,7 +108,7 @@ def fonction_1(graphe,c,b_0,gamma,lamda,dt,delta):
     nb_aretes_final=len(arete(graphe))
     densité=nb_aretes_final/nb_aretes_initial
     return graphe,densité
-print(graph_convenable(graphe),fonction_1(graphe,1,1,0.01,0.015,0.1,0.3))# un petit teste
+print(graph_convenable(graphe),fonction_1(graphe,0.1,1,0.01,0.015,0.1,0.3))# un petit teste
 
 
 

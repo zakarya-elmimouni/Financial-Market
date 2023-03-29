@@ -1,5 +1,118 @@
 import numpy as np
 import random
+
+delta = 0.95
+b_0 = 1
+
+class Graphe:
+
+    def __init__(self, agents=[], b_0=b_0, delta=delta):
+        self.agents = agents
+        self.graphe = dict([( i, [[],[], b_0] ) for i in agents]) 
+        #self.graphe a la structure suivante:
+        # {i:[[liste des agents j auquels i a prêté :  i --> j],
+        #     [liste des agents j qui ont prêté à i : i <-- j ],
+        #     Le montant cash que possède i : b0]}
+        self.nb_agents = len(agents)
+        self.nb_relations = 0
+        self.connectivite = self.nb_relations / self.nb_agents
+
+        l , b = 0 , 0
+        for i in self.agents:
+            l = l + len(self.graphe[i][1])
+            b = b + len(self.graphe[i][0]) + self.graphe[i][2]
+
+        self.liabilities = l 
+        self.assets = b
+
+    def ajout_relation(self, i, j): # i prête à j   
+        self.graphe[i][0].append(j) # j devient un emprunteur de i
+        self.graphe[j][1].append(i) # i devient un prêteur de i 
+        self.graphe[i][2] = self.graphe[i][2] - delta 
+        self.graphe[j][2] = self.graphe[j][2] + delta
+        self.nb_relations = self.nb_relations + 1
+    
+    def invest_reussi(self, i, j): # Le prêt donné par i à j arrive à maturité
+        self.graphe[i][0].remove(j) # j n'est plus un emprunteur de i
+        self.graphe[j][1].remove(i) # i n'est plus un prêteur de i 
+        self.graphe[i][2] = self.graphe[i][2] + 1 # Le prêt est remboursé
+        self.graphe[j][2] = self.graphe[j][2] -1
+        self.nb_relations = self.nb_relations - 1
+
+    def foreclose(self, i , j): # i décide de foreclose le prêt qu'il a donné à j 
+        self.graphe[i][0].remove(j) # j n'est plus un emprunteur de i
+        self.graphe[j][1].remove(i) # i n'est plus un prêteur de i
+        self.nb_relations = self.nb_relations - 1 
+
+# On génère un état initial aléatoire
+
+N = 100 
+agents = [i for i in range(N)]
+G = Graphe(agents, b_0, delta)
+for i in agents:
+    J = random.randint(1,N) # J est le nombre des agents j auquels i va prêter : i --> j
+    for j in random.choices(agents, k=J): 
+        if j==i:
+            continue
+        else:
+            if G.graphe[i][2] >= delta: # i doit avoir au moins delta pour pouvoir prêter
+                G.ajout_relation(i,j)
+
+print(G.graphe)
+
+def dynamique (G, c, gamma, lamda):
+
+    modification=1
+
+    while modification!=0:
+    # modification est une variable qui ne valera 0 que si l'état stationnaire est atteint.
+        
+        modification=0
+
+        for i in G.agents:
+
+            p = random.random() # p est nombre aléatoire entre 0 et 1
+            j = random.randint(0,len(G.agents)+1) # j est un agent aléatoire du graphe
+            
+            if (j != i) and (j not in G.graphe[i][1]) and (G.graphe[j][2]>=delta) :
+                #je vérifie que l'élément alétoire qu'on vient de choisir est différent de l'element qui se traite, et que cet element alétoire n'a pas déja emprunté à l'element (qui se traite) ainsi qu'il a plus de delta comme liquidité pour qu'il puisse preter à element 
+                
+                if a < gamma: 
+                    # Une relation s'ajoute avec un taux gamma 
+                    # et donc avec une probabilité gamma*dt.
+                    # On condière dt=1
+                    G.ajout_relation (j,i)
+            # prob       
+            r=random.random() # tirer un nombre aléatoire entre 0 et 1
+
+            if G.graphe[i][0]!=[]: # i a déjà prêté de l'argent
+                d = random.randint(0,len(G.graphe[i][0])-1)
+                j = G.graphe[i][0][d] # i a prêté à j 
+                
+                if graphe[j][1]!=[] :
+                    if (r<lamda) and (i in G.graphe[j][1]) :
+                        G.invest_reussi(i,j)
+                        
+            #divulgation de l'information  
+            u = random.random()
+            if u < nu:
+                c_etoile= ( len(G.graphe[i][0]) + G.graphe[i][2] + 1 ) / ( len(G.graphe[i][1]) + 1 ) 
+                if (c > c_etoile) and (G.graphe[i]!=[[],[],G.graphe[agent][2]]) :
+                    for j in G.graphe[i][1]:
+                        G.foreclose(j,i)
+                G.graphe[i]=[[],[],G.graphe[i][2]]
+
+                modification=1
+            else:
+                continue
+
+    return G.graphe, G.connectivite
+
+
+
+
+import numpy as np
+import random
 #on commence par une petite representation du pràblème
 #c'est une representation simple qui necessite pas mal de developpement surtout qu'il manque des points que j'ai pas comprise
 
@@ -114,5 +227,36 @@ def fonction_1(graphe,c,b_0,gamma,lamda,dt,delta):
     return graphe,densité
 print(graph_convenable(graphe),fonction_1(graphe,0.1,1,0.01,0.015,0.1,0.3))# un petit test
 
+B # Une matrice Bit où la ligne i B[i,:] est formée par les valeurs prises par 
+  # bi_0 + bi : holdings de l'agent i, cash + prêts donnés aux autres à différents instants. 
+  # et la colonne t B[:,t] est formée par les holdings des différents agents à l'instant t.
+L # Pareil L[i,:] est li : liabilities de l'agent i : ce que doit l'agent i aux autres à différents instants
 
 
+## Schéma représentatif de l'évolution de la position finacière de l'agent i 
+
+
+fig, ax = plt.subplots()
+ax.axis([ 0, 10, 0, 10 ])
+
+ax2.quiver(X, Y, dx, dy, color)
+
+
+X = [ 0,2 ]
+Y = [ 0,0 ]
+U = [ 2,0 ]
+
+V = [ 0,2 ]
+
+
+
+
+ax.set_xticks([ k for k in range (-5,6) ])
+
+ax.set_yticks([ k for k in range (-5,6) ])
+
+
+traceVec = ax.quiver(X, Y, U, V, angles='xy', scale_units='xy', scale=1)
+
+
+fig.show()

@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
 delta = 0.95
 b_0 = 1
@@ -15,7 +16,6 @@ class Graphe:
         #     Le montant cash que possède i : b0]}
         self.nb_agents = len(agents)
         self.nb_relations = 0
-        self.connectivite = self.nb_relations / self.nb_agents
 
         l , b = 0 , 0
         for i in self.agents:
@@ -44,83 +44,6 @@ class Graphe:
         self.graphe[j][1].remove(i) # i n'est plus un prêteur de i
         self.nb_relations = self.nb_relations - 1 
 
-# On génère un état initial aléatoire
-
-N = 100 
-agents = [i for i in range(N)]
-G = Graphe(agents, b_0, delta)
-for i in agents:
-    J = random.randint(1,N) # J est le nombre des agents j auquels i va prêter : i --> j
-    for j in random.choices(agents, k=J): 
-        if j==i:
-            continue
-        else:
-            if G.graphe[i][2] >= delta: # i doit avoir au moins delta pour pouvoir prêter
-                G.ajout_relation(i,j)
-
-print(G.graphe)
-
-def dynamique (G, c, gamma, lamda):
-
-    modification=1
-
-    while modification!=0:
-    # modification est une variable qui ne valera 0 que si l'état stationnaire est atteint.
-        
-        modification=0
-
-        for i in G.agents:
-
-            p = random.random() # p est nombre aléatoire entre 0 et 1
-            j = random.randint(0,len(G.agents)+1) # j est un agent aléatoire du graphe
-            
-            if (j != i) and (j not in G.graphe[i][1]) and (G.graphe[j][2]>=delta) :
-                #je vérifie que l'élément alétoire qu'on vient de choisir est différent de l'element qui se traite, et que cet element alétoire n'a pas déja emprunté à l'element (qui se traite) ainsi qu'il a plus de delta comme liquidité pour qu'il puisse preter à element 
-                
-                if a < gamma: 
-                    # Une relation s'ajoute avec un taux gamma 
-                    # et donc avec une probabilité gamma*dt.
-                    # On condière dt=1
-                    G.ajout_relation (j,i)
-            # prob       
-            r=random.random() # tirer un nombre aléatoire entre 0 et 1
-
-            if G.graphe[i][0]!=[]: # i a déjà prêté de l'argent
-                d = random.randint(0,len(G.graphe[i][0])-1)
-                j = G.graphe[i][0][d] # i a prêté à j 
-                
-                if graphe[j][1]!=[] :
-                    if (r<lamda) and (i in G.graphe[j][1]) :
-                        G.invest_reussi(i,j)
-                        
-            #divulgation de l'information  
-            u = random.random()
-            if u < nu:
-                c_etoile= ( len(G.graphe[i][0]) + G.graphe[i][2] + 1 ) / ( len(G.graphe[i][1]) + 1 ) 
-                if (c > c_etoile) and (G.graphe[i]!=[[],[],G.graphe[agent][2]]) :
-                    for j in G.graphe[i][1]:
-                        G.foreclose(j,i)
-                G.graphe[i]=[[],[],G.graphe[i][2]]
-
-                modification=1
-            else:
-                continue
-
-    return G.graphe, G.connectivite
-
-
-
-
-import numpy as np
-import random
-#on commence par une petite representation du pràblème
-#c'est une representation simple qui necessite pas mal de developpement surtout qu'il manque des points que j'ai pas comprise
-
-#graphe contient tous les agents et modélise notre réseau sous forme d'un graphe 
-#les sommmets sont les agents,et ils sont liés aux autres agents à travers les aretes 
-#graphe a la structure suivante {agent:[[liste des agents auquelsl'agent a emprunté],[liste des angents qui ont preté à notre agent],b_O]}
-#delta est le montant de pret par defaut pour tout le monde <1
-
 def arete(graphe):
     """description: une foction qui retourne la liste des aretes à partir du graphe
     ----input:graphe qui représente notre réseau
@@ -131,132 +54,95 @@ def arete(graphe):
             if (element,voisin) not in aretes:
                 aretes.append((element,voisin))
     return  aretes
+# On génère un état initial aléatoire
 
-#voici notre graphe de réference:
-graphe={1:[[2,3,7],[4,5,6,8]],2:[[3,5,8],[1,6,7]],3:[[4,5],[2,1,5,7]],4:[[1,7,8],[3,5,6]],5:[[1,3,4,6,7],[2,3,8]],6:[[2,4,1],[5,8]],7:[[3,2,8],[4,1,5]],8:[[6,5,1],[4,2,7]]}
-#ce graphe necessite encore une améléoration au niveau du nombre des sommets et de relations
-#un problème qui se pose c'est quelle b_0 prendre pour ce graphe
-# on doit choisir une valeur de b_0 qui dépend de la taille du graphe mais qui ne va pas biaiser la condition
-#la conditoin est c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1
+N = 1000
+agents = [i for i in range(N)]
+G = Graphe(agents, b_0, delta)
+for i in agents:
+    J = random.randint(1,N) # J est le nombre des agents j auquels i va prêter : i --> j
+    k=random.random()
+    for j in random.choices(agents, k=J): 
+        if j==i:
+            continue
+        else:
+            if G.graphe[i][2] >= delta: # i doit avoir au moins delta pour pouvoir prêter
+                G.ajout_relation(i,j)
+print(len(arete(G.graphe)))
+         
+def dynamique (G, c, gamma,lamda,nu,durée):
 
-def graph_convenable(graphe):
-    """Description: cette fonction permet de vérifier si notre graphe a la bonne forme 
-    ----input---- graphe: le graphe qui représente notre réseau
-    ----output---- booléen: True si le graphe vérifie bien que pour chaque agent i , si un agent j
-    est présent dans la liste des préteurs de i alors i est présent dans la liste des agents auxquels j a emprunté """
-    for element in graphe.keys():
-        for voisin in graphe[element][0]:
-            if element not in graphe[voisin][1]:
-                return False
-        for voisin in graphe[element][1]:
-            if element not in graphe[voisin][0]:
-                return False
-    return True
-#print(fonction(graphe,5,10))
-#après ça je dois penser à comment je vais insérer la variable gamma qui modélise le taux de création d'un lien
-#avec gamma on peut avoir un réseau dynamique 
-#lam=4
-#a=np.random.poisson(5)
-#At rate gamma, each agent i takes out a loan from agent j, selected at random from the pool of other investors.
-#This implies (ℓi, bi) → (ℓi + 1, bi) and (ℓj , bj) → (ℓj , bj + 1).
-#essayons de développer la fonction implémentée précédemment pour avoir un modèle dynamique
-def fonction_1(graphe,c,b_0,gamma,lamda,dt,delta):
-    """"
-    ----Description----
-    cette fonction permet de modéliser la dynamique de notre réseau, elle prend en entrée notre etat initial
-    modélisé par le graphe puis elle envisage certains opérations entre les agents (des agents qui décident de 
-    continuer à preter à maturité et des agents qui décident de retirer leurs fonds...) 
-     ----input----
-        graphe: notre graphe qui modélise notre réseau
-        c: le cout d'une mauvaise exécution
-        b_0: liquidité initiale des agents: dans le modèle il est prise constante pour tous les agents
-        gamma: taux d'ajout d'un arete
-        lamda: taux de suppression d'un arete 
-        dt: temps entre deux périodes
-        delta:montant de tous les prets (il est supposé constant) 
-    ----output----
-    notre graphe à l'état stationnaire + densité du graphe qui représente le rapport entre le nombre d'aretes
-    à l'état final sur le nombre d'artes à l'état initial"""
-    #je vais définir un dictionnaire des voisins
-    nb_aretes_initial=len(arete(graphe))
-    voisins={}
-    #ajout du b_0 au graphe de tous les agents
-    for element in graphe.keys():
-        graphe[element].append(b_0)
-    print(graphe)
-    for element in graphe.keys():
-        voisin_element=graphe[element][0]+graphe[element][1]
-        voisin_element=set(voisin_element)
-        voisin_element=list(voisin_element)
-        voisins[element]=voisin_element
-    modification=1
-    while modification!=0:#modification est une variable qui nous permet de détecter l'état stable où il aura plus de modification dans notre réseau 
-        modification=0
-        noeuds=list(graphe.keys())# c'est l'ensemble des sommets de notre graphe 
-        for element in noeuds:
-            a=random.random()# cela permet de générer un entier aléatoire entre 0 et 1
-            b=random.randint(0,len(noeuds)-1)#on récupère un indice aléatoire d'un élement quelconque de la liste des sommets 
-            element_aléatoire=noeuds[b]# on récupère l'élement associé à l'indice aléatoire qu'on vient de récupérer
-            if element_aléatoire!=element and element_aléatoire not in graphe[element][1] and graphe[element_aléatoire][2]>=delta:
+    t=0
+    temps=[]
+    liste_de_connectivité=[]
+
+    while t<=durée:
+        
+
+        liste_de_connectivité.append(len(arete(G.graphe)))
+        temps.append(t)
+        
+        t=t+1        
+        for i in G.agents:
+            k=random.random()
+            p = random.random() # p est nombre aléatoire entre 0 et 1
+            j = random.randint(0,len(G.agents)-1) # j est un agent aléatoire du graphe
+            
+            if (j != i) and (j not in G.graphe[i][1]) and (G.graphe[j][2]>=delta) :
                 #je vérifie que l'élément alétoire qu'on vient de choisir est différent de l'element qui se traite, et que cet element alétoire n'a pas déja emprunté à l'element (qui se traite) ainsi qu'il a plus de delta comme liquidité pour qu'il puisse preter à element 
-                if a>=gamma*dt:#condition pour preter
-                    graphe[element][1].append(element_aléatoire)#on ajouté l'element aléatoire à la liste des element qui ont preté à element
-                    graphe[element][2]=graphe[element][2]+delta# on ajoute delta à la liquidité de element 
-                    graphe[element_aléatoire][0].append(element)#pn ajoute element à la liste des elements auxquels element_aléatoire a preté 
-                    graphe[element_aléatoire][2]=graphe[element_aléatoire][2]-delta # on retire delta de la liquidité de element_aléatoire
-            r=random.random()# tirer un nombre aléatoire entre 0 et 1
-            if graphe[element][0]!=[]:
-                d=random.randint(0,len(graphe[element][0])-1)#récupérer un indice aléatoire parmi les agents qui ont emprunté de notre element
-                element_aléatoire2=graphe[element][0][d]#récupérer l'élemet aléatoire correspondant
-                if graphe[element_aléatoire2][1]!=[] :
-                    if r>=lamda*dt and element in graphe[element_aléatoire2][1]:# cette conditon de lamda*dt n'a aucun sens
-                        graphe[element][0].remove(element_aléatoire2)#on retire element_aléatoire2 de la liste des elements auxquels element a preté 
-                        graphe[element_aléatoire2][1].remove(element)#on retire element de la liste des elements qui ont preté à element_aléatoire2
-            #divulgation de l'information            
-            if c*(len(graphe[element][1])+1)>len(graphe[element][0])+b_0+1 and graphe[element]!=[[],[],graphe[element][2]]:
-                graphe[element]=[[],[],graphe[element][2]]
-                for voisin in graphe[element][0]:
-                    graphe[voisin][1].remove(element)
-                for voisin in graphe[element][1]:
-                    graphe[voisin][0].remove(element)
-                modification=1
+                
+                if p < gamma: 
+                    # Une relation s'ajoute avec un taux gamma 
+                    # et donc avec une probabilité gamma*dt.
+                    # On condière dt=1
+                    if k>0.5:
+                        G.ajout_relation (j,i)
+                    else:
+                        G.ajout_relation (i,j)
+
+            # prob       
+            r=random.random() # tirer un nombre aléatoire entre 0 et 1
+            r2=random.random()
+            if G.graphe[i][0]!=[] and G.graphe[i][1]!=[]: # i a déjà prêté de l'argent
+                d1 = random.randint(0,len(G.graphe[i][0])-1)
+                d2 = random.randint(0,len(G.graphe[i][1])-1)
+                j1 = G.graphe[i][0][d1] # i a prêté à j
+                j2 = G.graphe[i][1][d2] # j a prêté à i
+
+                
+                if G.graphe[j1][1]!=[] and G.graphe[j2][0]!=[]:
+                    if (r<lamda):
+                        if r2>0.5:
+                            if i in G.graphe[j1][1]:
+                                G.invest_reussi(i,j1)
+                        else:
+                            if i in G.graphe[j2][0]:
+                                G.invest_reussi(j2,i)
+                        
+            #divulgation de l'information  
+            u = random.random()
+            if u < nu:
+                c_etoile= ( len(G.graphe[i][0]) + G.graphe[i][2] + 1 ) / ( len(G.graphe[i][1]) + 1 ) 
+                if (c > c_etoile) and ( G.graphe[i][1]!=[]):
+                #(G.graphe[i]!=[[],[],G.graphe[i][2]]) :
+                    for j in G.graphe[i][1]:
+                        if ( i in G.graphe[j][0]):
+                            G.foreclose(j,i)
+                G.graphe[i]=[[],[],G.graphe[i][2]]
             else:
                 continue
-    nb_aretes_final=len(arete(graphe))
-    densité=nb_aretes_final/nb_aretes_initial
-    return graphe,densité
-print(graph_convenable(graphe),fonction_1(graphe,0.1,1,0.01,0.015,0.1,0.3))# un petit test
-
-B # Une matrice Bit où la ligne i B[i,:] est formée par les valeurs prises par 
-  # bi_0 + bi : holdings de l'agent i, cash + prêts donnés aux autres à différents instants. 
-  # et la colonne t B[:,t] est formée par les holdings des différents agents à l'instant t.
-L # Pareil L[i,:] est li : liabilities de l'agent i : ce que doit l'agent i aux autres à différents instants
+    return G.graphe,liste_de_connectivité,temps
+lamda=0.001
+gamma=0.9
+nu=0.2
+durée=1000
+c=0.4
 
 
-## Schéma représentatif de l'évolution de la position finacière de l'agent i 
+liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+print(dynamique (G, c, gamma,lamda,nu,durée))
+plt.plot(temps,liste_de_conectivité)
+plt.show()
 
 
-fig, ax = plt.subplots()
-ax.axis([ 0, 10, 0, 10 ])
-
-ax2.quiver(X, Y, dx, dy, color)
-
-
-X = [ 0,2 ]
-Y = [ 0,0 ]
-U = [ 2,0 ]
-
-V = [ 0,2 ]
-
-
-
-
-ax.set_xticks([ k for k in range (-5,6) ])
-
-ax.set_yticks([ k for k in range (-5,6) ])
-
-
-traceVec = ax.quiver(X, Y, U, V, angles='xy', scale_units='xy', scale=1)
-
-
-fig.show()

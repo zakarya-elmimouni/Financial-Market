@@ -126,12 +126,13 @@ def dynamique (G, c, gamma,lamda,nu,durée):
             else:
                 continue
     return G.graphe,liste_de_connectivité,temps
-
+#les parametres gamma et lamda sont à mettre pour chaque figure
+nu=0.05
+gamma=0.9
+lamda=0.02
 G=initial_aleat(N, b_0, delta)
-liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
 temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
-#plt.plot(temps,liste_de_conectivité)
-#plt.show()
 liste_des_C=np.linspace(0,1,101)
 #liste_connectivité2=[dynamique (G, c, gamma,lamda,nu,durée)[3]for c in liste_des_C]
 
@@ -142,6 +143,13 @@ plt.xlabel('temps')
 plt.title('variation de la densité du graphe en fonction du temps (nu=0.05 ,gamma=0.9,lambda=0.02)')
 plt.show()
 
+nu=0.9 
+gamma=0.9
+lamda=0.02
+G=initial_aleat(N, b_0, delta)
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+liste_des_C=np.linspace(0,1,101)
 #figure 6
 G=initial_aleat(N, b_0, delta)
 liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
@@ -152,6 +160,13 @@ plt.xlabel('temps')
 plt.title('variation de la densité du graphe en fonction du temps (nu=0.9 ,gamma=0.9,lambda=0.02)')
 plt.show()
 
+nu=0.4
+gamma=0.01
+lamda=0.5
+G=initial_aleat(N, b_0, delta)
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+liste_des_C=np.linspace(0,1,101)
 #figure 5
 G=initial_aleat(N, b_0, delta)
 liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
@@ -162,6 +177,13 @@ plt.xlabel('temps')
 plt.title('variation de la densité du graphe en fonction du temps (nu=0.4 ,gamma=0.01,lambda=0.5)')
 plt.show()
 
+nu=0.4
+gamma=0.01
+lamda=0.5
+G=initial_aleat(N, b_0, delta)
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+liste_des_C=np.linspace(0,1,101)
 # Figure 4 
 lamda=0.001
 C=np.linspace(0,1,50) 
@@ -181,6 +203,13 @@ for gamma in [0.0001, 0.001, 0.01, 0.1, 0.5, 0.9 ]:
 plt.legend(loc="upper left")
 plt.show()
 
+nu=0.5
+gamma=0.5
+lamda=0.8
+G=initial_aleat(N, b_0, delta)
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+liste_des_C=np.linspace(0,1,101)
 #figure 3
 G=initial_aleat(N, b_0, delta)
 liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
@@ -193,6 +222,13 @@ plt.xlabel('c')
 plt.title('variation de la densité du graphe en fonction de c (nu=0.4 ,gamma=0.5,lambda=0.8)')
 plt.show()
 
+nu=0.4
+gamma=0.5
+lamda=0.01
+G=initial_aleat(N, b_0, delta)
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+liste_des_C=np.linspace(0,1,101)
 #figure 2
 G=initial_aleat(N, b_0, delta)
 liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
@@ -205,6 +241,13 @@ plt.xlabel('c')
 plt.title('variation du nombre de relation du graphe en fonction de c (nu=0.4 ,gamma=0.5,lambda=0.01)')
 plt.show()
 
+nu=0.5
+gamma=0.5
+lamda=0.5
+G=initial_aleat(N, b_0, delta)
+liste_de_conectivité=dynamique (G,c,gamma,lamda,nu,durée)[1]
+temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
+liste_des_C=np.linspace(0,1,101)
 #figure 1
 G=initial_aleat(N, b_0, delta)
 liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]

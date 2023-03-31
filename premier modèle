@@ -56,7 +56,7 @@ def arete(graphe):
     return  aretes
 # On génère un état initial aléatoire
 
-N = 1000
+N = 500
 agents = [i for i in range(N)]
 G = Graphe(agents, b_0, delta)
 for i in agents:
@@ -68,13 +68,14 @@ for i in agents:
         else:
             if G.graphe[i][2] >= delta: # i doit avoir au moins delta pour pouvoir prêter
                 G.ajout_relation(i,j)
-print(len(arete(G.graphe)))
+#print(len(arete(G.graphe)))
          
 def dynamique (G, c, gamma,lamda,nu,durée):
 
     t=0
     temps=[]
     liste_de_connectivité=[]
+    nb_arretes_initiale=len(arete(G.graphe))
 
     while t<=durée:
         
@@ -108,8 +109,6 @@ def dynamique (G, c, gamma,lamda,nu,durée):
                 d2 = random.randint(0,len(G.graphe[i][1])-1)
                 j1 = G.graphe[i][0][d1] # i a prêté à j
                 j2 = G.graphe[i][1][d2] # j a prêté à i
-
-                
                 if G.graphe[j1][1]!=[] and G.graphe[j2][0]!=[]:
                     if (r<lamda):
                         if r2>0.5:
@@ -131,18 +130,24 @@ def dynamique (G, c, gamma,lamda,nu,durée):
                 G.graphe[i]=[[],[],G.graphe[i][2]]
             else:
                 continue
-    return G.graphe,liste_de_connectivité,temps
-lamda=0.001
-gamma=0.9
-nu=0.2
-durée=1000
-c=0.4
-
-
+    nombre_aretes_final=len(arete(G.graphe))
+    densité_finale=nombre_aretes_final/ nb_arretes_initiale       
+    return G.graphe,liste_de_connectivité,temps,densité_finale
+lamda=0.4
+gamma=0.99
+nu=0.4
+durée=100
+c=0.5
 liste_de_conectivité=dynamique (G, c, gamma,lamda,nu,durée)[1]
 temps=dynamique (G, c, gamma,lamda,nu,durée)[2]
-print(dynamique (G, c, gamma,lamda,nu,durée))
-plt.plot(temps,liste_de_conectivité)
-plt.show()
+#plt.plot(temps,liste_de_conectivité)
+#plt.show()
+liste_des_C=np.linspace(0,1,101)
 
+liste_connectivité2=[dynamique (G, c, gamma,lamda,nu,durée)[3]for c in liste_des_C]
+plt.plot(liste_des_C,liste_de_conectivité)
+plt.ylabel('nombre de relation')
+plt.xlabel('c')
+plt.title('variation de la densité du graphe en fonction du c (gamma=0.9 )')
+plt.show()
 
